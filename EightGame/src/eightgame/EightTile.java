@@ -21,16 +21,25 @@ public class EightTile extends JButton {
     public EightTile(){
     }
     public EightTile(int label){
+        this();
         this.label = label;
-        setText(String.valueOf(label));
+        if(label!=9){
+            setText(String.valueOf(label));
+        }
     }
     public EightTile(int label, int position) {
-        this.label = label;
-        setText(String.valueOf(label));
-        
-        setPosition(position);
+        this(label);
+        this.position = position;
+        setTileColor();
     }
 
+    public void addVetoableChangeListener(VetoableChangeListener listener){
+        vetoableChangeSupport.addVetoableChangeListener(listener);
+    }
+    public void removeVetoableChangeListener(VetoableChangeListener listener){
+        vetoableChangeSupport.removeVetoableChangeListener(listener);
+    }
+    
     public void setPosition(int position){
         try{
             vetoableChangeSupport.fireVetoableChange("position", this.position, position);

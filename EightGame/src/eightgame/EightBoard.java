@@ -6,6 +6,8 @@ package eightgame;
 
 import java.awt.Container;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Random;
@@ -19,16 +21,12 @@ public class EightBoard extends javax.swing.JFrame {
     final int TILES_NUMBER = 9;
     final int TILE_SIZE = 35;
     final int TILE_OFFSET = 15;
-                
-    private EightTile[] tiles;
-    
+                    
     /**
      * Creates new form EightBoard
      */
     public EightBoard() {
         initComponents();
-        tiles = createTiles(TILES_NUMBER, TILE_OFFSET, TILE_SIZE);
-        
         initBoard();
     }
 
@@ -93,6 +91,13 @@ public class EightBoard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    private void initBoard(){
+        int[] permutation = generatePermutation(TILES_NUMBER);
+        EightTile[] tiles = createTiles(TILES_NUMBER, TILE_OFFSET, TILE_SIZE);
+        
+        eightControl1.setTiles(tiles);
+        eightControl1.shuffleTiles(tiles, permutation);    
+    }
     private EightTile[] createTiles(int tilesNumber, int tileOffset, int tileSize){
         //La generazione lato codice permette di ottenere una board dinamica
         EightTile[] tiles = new EightTile[tilesNumber];
@@ -102,9 +107,15 @@ public class EightBoard extends javax.swing.JFrame {
         setSize(gridSize,gridSize + 100);
         
         for(int i = 0; i< tilesNumber; i++){
-            tiles[i] = new EightTile(i + 1,i + 1);
+            tiles[i] = new EightTile(i + 1,i);
             int positionX = (i * (tileSize + tileOffset)) % gridSize;
             int positionY = (i/tilesInARow) * (tileSize + tileOffset);
+            
+            tiles[i].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    onTileClick(evt);
+                }
+            });
             
             tiles[i].setLocation(new Point(positionX,positionY));
             tiles[i].setSize(tileSize, tileSize);
@@ -112,11 +123,6 @@ public class EightBoard extends javax.swing.JFrame {
         }
         
         return tiles;
-    }
-    private void initBoard(){
-        int[] permutation = generatePermutation(TILES_NUMBER);
- 
-        shuffleTiles(tiles, permutation);    
     }
     private int[] generatePermutation(int tilesNumber){
         //Creating an array that goes from 0 to n and then shuffle it
@@ -134,45 +140,22 @@ public class EightBoard extends javax.swing.JFrame {
         
         return permutation;
     }
-    private void shuffleTiles(EightTile[] tiles, int[] permutation ){
-        //1. Cerco il tile che ha label = permutazione[i]
-        //2. Sostituisco il tile trovato (con indice j) con il tile in posizione i
+    private void onTileClick(ActionEvent evt){
+        EightTile sourceTile = (EightTile) evt.getSource();
         
-        for(int i = 0; i < TILES_NUMBER; i++){
-            if(tiles[i].getLbl() == permutation[i]){
-                //Tile is already in the right position
-                continue;
-            }
-            
-            for(int j = 0; j < TILES_NUMBER; j++){
-                if(tiles[j].getLbl() == permutation[i]){
-                    switchTiles(i,j);
-                }
-            }
-        }
+        int newPosition = eightControl1.findNearestHolePosition(sourceTile.getPosition());
+        eightControl1.switchTiles(sourceTile.getPosition(), newPosition);
     }
-    private void switchTiles(int sourceIndex, int destinationIndex){
-        int tempPosition = tiles[sourceIndex].getPosition();
-        Point tempLocation = tiles[sourceIndex].getLocation();
-        
-        tiles[sourceIndex].setPosition(tiles[destinationIndex].getPosition());
-        tiles[sourceIndex].setLocation(tiles[destinationIndex].getLocation());
-        tiles[destinationIndex].setPosition(tempPosition);
-        tiles[destinationIndex].setLocation(tempLocation);
-        
-        EightTile tempTile = tiles[sourceIndex];
-        tiles[sourceIndex] = tiles[destinationIndex];
-        tiles[destinationIndex] = tempTile;
-    }
-  
+    
     private void flipTiles(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_flipTiles
-        switchTiles(0,1);
+        eightControl1.switchTiles(0,1);
     }//GEN-LAST:event_flipTiles
 
     private void resetBoard(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBoard
-        initBoard();
+        int[] permutation = generatePermutation(TILES_NUMBER);
+        eightControl1.resetBoard(permutation);
     }//GEN-LAST:event_resetBoard
-   
+    
     /**
      * @param args the command line arguments
      */
