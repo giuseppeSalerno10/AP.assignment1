@@ -24,8 +24,6 @@ public class EightBoard extends javax.swing.JFrame {
     final int TILES_NUMBER = 9;
     final int TILE_SIZE = 35;
     final int TILE_OFFSET = 15;
-    
-    private EightController controller;
     /**
      * Creates new form EightBoard
      */
@@ -45,6 +43,7 @@ public class EightBoard extends javax.swing.JFrame {
 
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        eightController1 = new eightgame.EightController();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -62,6 +61,8 @@ public class EightBoard extends javax.swing.JFrame {
             }
         });
 
+        eightController1.setText("Start");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -72,11 +73,17 @@ public class EightBoard extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                 .addComponent(jButton2)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(57, 57, 57)
+                .addComponent(eightController1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(271, Short.MAX_VALUE)
+                .addContainerGap(237, Short.MAX_VALUE)
+                .addComponent(eightController1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
@@ -88,7 +95,8 @@ public class EightBoard extends javax.swing.JFrame {
     private void initBoard(){
         int[] permutation = generatePermutation(TILES_NUMBER);
         EightTile[] tiles = createTiles(TILES_NUMBER, permutation, TILE_OFFSET, TILE_SIZE);
-        EightController controller = createController(tiles, 20,30);
+        eightController1.setTiles(tiles);
+        resetListeners.add(eightController1);
     }
     private int[] generatePermutation(int tilesNumber){
         //Creating an array that goes from 0 to n and then shuffle it
@@ -134,24 +142,19 @@ public class EightBoard extends javax.swing.JFrame {
         
         return tiles;
     }
-    private EightController createController(EightTile[] tiles, int width, int height){
-        controller = new EightController(tiles);
-        
-        controller.setSize(width,height);
-        controller.setLocation(100, 100);
-        
-        getContentPane().add(controller);
-        resetListeners.add(controller);
-        return controller;
-    }
     
     private void onTileClick(ActionEvent evt){
         EightTile sourceTile = (EightTile) evt.getSource();
-        sourceTile.setLbl(9);
+        try{
+            sourceTile.setLbl(9);
+        }
+        catch(Exception e){
+            
+        }
     }
 
     private void flipTiles(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_flipTiles
-        controller.switchTiles(0,1);
+        eightController1.switchTiles(0,1);
     }//GEN-LAST:event_flipTiles
 
     private void resetBoard(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBoard
@@ -197,6 +200,7 @@ public class EightBoard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private eightgame.EightController eightController1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     // End of variables declaration//GEN-END:variables

@@ -7,8 +7,11 @@ package eightgame;
 import eightgame.Events.ResetListener;
 import eightgame.Events.UpdateTileListener;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.*;
 import javax.swing.JButton;
+import javax.swing.Timer;
 
 /**
  *
@@ -41,13 +44,22 @@ public class EightTile extends JButton implements UpdateTileListener, ResetListe
     public int getLbl(){
         return label;
     }
-    public void setLbl(int label){
+    public void setLbl(int label) throws InterruptedException{
         try{
             vetoableChangeSupport.fireVetoableChange("label", this.label, label);
             updateLabelAndText(label);
         }
         catch(PropertyVetoException e){
-            System.out.println(String.format("label change vetoed, oldValue: %s, newValue: %s", this.label,label));
+            Color currentColor = getBackground();
+            setBackground(Color.RED);
+            Timer blinkTimer = new Timer(500, new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    setBackground(currentColor);
+                    ((Timer) e.getSource()).stop();
+                }
+            });
+            blinkTimer.start();
+
         }
     }
     
